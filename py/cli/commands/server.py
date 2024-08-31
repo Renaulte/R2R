@@ -21,20 +21,29 @@ from cli.utils.timer import timer
 @click.pass_obj
 def health(client):
     """Check the health of the server."""
-    with timer():
+    with timer(silent=client.json):
         response = client.health()
 
-    click.echo(response)
+    if client.json:
+        click.echo(json.dumps(response))
+    else:
+        click.echo(response)
 
 
 @cli.command()
 @click.pass_obj
 def server_stats(client):
     """Check the server stats."""
-    with timer():
+    with timer(silent=client.json):
         response = client.server_stats()
 
-    click.echo(response)
+    if client.json:
+        click.echo(json.dumps(response))
+    else:
+        click.echo(f"Started at: {response['results']['start_time']}")
+        click.echo(f"Uptime: {response['results']['uptime_seconds']} seconds")
+        click.echo(f"CPU Usage: {response['results']['cpu_usage']}%")
+        click.echo(f"Memory Usage: {response['results']['memory_usage']}MB")
 
 
 @cli.command()
@@ -45,20 +54,26 @@ def server_stats(client):
 @click.pass_obj
 def logs(client, run_type_filter, max_runs):
     """Retrieve logs with optional type filter."""
-    with timer():
+    with timer(silent=client.json):
         response = client.logs(run_type_filter, max_runs)
 
-    for log in response["results"]:
-        click.echo(f"Run ID: {log['run_id']}")
-        click.echo(f"Run Type: {log['run_type']}")
-        click.echo(f"Timestamp: {log['timestamp']}")
-        click.echo(f"User ID: {log['user_id']}")
-        click.echo("Entries:")
-        for entry in log["entries"]:
-            click.echo(f"  - {entry['key']}: {entry['value'][:100]}")
-        click.echo("---")
+    if client.json:
+        click.echo(json.dumps(response))
 
-    click.echo(f"Total runs: {len(response)}")
+    else:
+        for log in response["results"]:
+            click.echo(f"Run ID: {log['run_id']}")
+            click.echo(f"Run Type: {log['run_type']}")
+            click.echo(f"Timestamp: {log['timestamp']}")
+            click.echo(f"User ID: {log['user_id']}")
+            click.echo("Entries:")
+            for entry in log["entries"]:
+                click.echo(f"  - {entry['key']}: {entry['value'][:100]}")
+            click.echo("---")
+
+        click.echo(
+            f"Total logs: {sum(len(log['entries']) for log in response['results'])}"
+        )
 
 
 @cli.command()

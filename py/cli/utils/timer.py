@@ -9,8 +9,9 @@ import click
 
 
 @contextmanager
-def timer():
+def timer(silent=False):
     start = time.time()
     yield
     end = time.time()
-    click.echo(f"Time taken: {end - start:.2f} seconds")
+    if not silent:
+        click.echo(f"Time taken: {end - start:.2f} seconds\n")

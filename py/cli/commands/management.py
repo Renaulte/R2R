@@ -135,6 +135,8 @@ def document_chunks(client, document_id, offset, limit):
 
     with timer():
         chunks_data = client.document_chunks(document_id, offset, limit)
+        if client.json:
+            return chunks_data
 
     chunks = chunks_data["results"]
     if not chunks:
