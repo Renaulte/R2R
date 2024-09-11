@@ -47,12 +47,12 @@ ARG PORT=8000 HOST=0.0.0.0
 ENV PORT=$PORT HOST=$HOST TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata
 EXPOSE $PORT
 
-COPY . /app
+# COPY .. /app
 # Copy the application and config
-COPY core /app/core
-COPY r2r /app/r2r
-COPY r2r.toml /app/r2r.toml
-COPY pyproject.toml /app/pyproject.toml
+# COPY core /app/core
+# COPY r2r /app/r2r
+# COPY r2r.toml /app/r2r.toml
+# COPY pyproject.toml /app/pyproject.toml
 
 # Run the application
-CMD ["sh", "-c", "uvicorn core.main.app_entry:app --host $HOST --port $PORT"]
+# CMD ["sh", "-c", "uvicorn core.main.app_entry:app --host $HOST --port $PORT"]

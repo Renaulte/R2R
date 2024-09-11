@@ -179,7 +179,7 @@ services:
     command: >
       sh -c '
         export HATCHET_CLIENT_TOKEN=$$(cat /hatchet_api_key/api_key.txt) &&
-        exec uvicorn core.main.app_entry:app --host $${HOST} --port $${PORT}
+        uvicorn core.main.app_entry:app --host $${HOST} --port $${PORT} --reload --reload-dir /app
       '
     networks:
       - r2r-network
@@ -188,10 +188,11 @@ services:
       interval: 6s
       timeout: 5s
       retries: 5
-    restart: on-failure
+    restart: always
     volumes:
-      - ${CONFIG_PATH:-/}:${CONFIG_PATH:-/app/config}
+      # - ${CONFIG_PATH:-.}:${CONFIG_PATH:-/app/config}
       - hatchet_api_key:/hatchet_api_key:ro
+      - ../py:/app
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.r2r.rule=PathPrefix(`/r2r-api`)"
